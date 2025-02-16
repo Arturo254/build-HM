@@ -1,8 +1,7 @@
-name: Build Windows exe 
+name: Build Windows exe
 on: workflow_dispatch
   
 jobs:
-
   build-windows-exe:
     runs-on: windows-latest
     
@@ -12,18 +11,17 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: '3.24.2'
-          
+      
+      - name: Install required dependencies
+        run: |
+          choco install nsis
+          dart pub global activate melos
+          git clone https://github.com/anandnet/flutter_distributor.git
+          cd flutter_distributor && git rev-parse HEAD
+          melos run activate
+
       - name: Clone project
-        run: git clone https://github.com/Arturo254/OpenTune-Desktop
-
-
-      - name: Flutter doctor
-        run: flutter doctor
-        
-      - name: Install project dependencies
-        working-directory: ./OpenTune-Desktop
-        run: flutter pub get
-
+        run: git clone https://github.com/Arturo254/OpenTune-Desktop.git
 
       - name: Update lang data
         working-directory: ./OpenTune-Desktop
@@ -33,15 +31,14 @@ jobs:
         working-directory: ./OpenTune-Desktop/lib/utils
         run: echo "const updateCheckFlag = true;" > update_check_flag_file.dart
         
-      - name: Build windows exe package
+      - name: Build Windows exe package
         working-directory: ./OpenTune-Desktop
         run: |
           flutter clean
-          dart pub global activate flutter_distributor
           flutter_distributor package --platform windows --targets exe
           
       - name: Upload Windows exe artifact
         uses: actions/upload-artifact@v4
         with:
-          name: OpenTune Desktop exe
-     
+          name: OpenTune Desktop Windows exe
+          path: ./OpenTune-Desktop/dist/*
