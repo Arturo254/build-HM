@@ -24,15 +24,21 @@ jobs:
         working-directory: ./OpenTune-Desktop/lib/utils
         run: echo "const updateCheckFlag = true;" > update_check_flag_file.dart
         
-      - name: Build windows exe package
+      - name: Build Windows exe package
         working-directory: ./OpenTune-Desktop
         run: |
           flutter clean
           dart pub global activate flutter_distributor
+          flutter build windows
           flutter_distributor package --platform windows --targets exe
           
+      - name: Debug build output
+        run: |
+          echo "Verificando archivos generados en OpenTune-Desktop:"
+          ls -R ./OpenTune-Desktop/build/windows/x64/runner/Release/
+
       - name: Upload Windows exe artifact
         uses: actions/upload-artifact@v4
         with:
           name: OpenTune Desktop windows exe
-          path: ./OpenTune-Desktop/dist/*
+          path: ./OpenTune-Desktop/build/windows/x64/runner/Release/*
