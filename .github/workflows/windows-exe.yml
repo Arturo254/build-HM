@@ -14,18 +14,18 @@ jobs:
           flutter-version: '3.24.2'
           
       - name: Clone project
-        run: git clone https://github.com/anandnet/Harmony-Music.git
+        run: git clone https://github.com/Arturo254/OpenTune-Desktop
 
       - name: Update lang data
-        working-directory: ./Harmony-Music
+        working-directory: ./OpenTune-Desktop
         run: dart localization/generator.dart
 
       - name: Set update check flag to true
-        working-directory: ./Harmony-Music/lib/utils
+        working-directory: ./OpenTune-Desktop/lib/utils
         run: echo "const updateCheckFlag = true;" > update_check_flag_file.dart
         
       - name: Build windows exe package
-        working-directory: ./Harmony-Music
+        working-directory: ./OpenTune-Desktop
         run: |
           flutter clean
           dart pub global activate flutter_distributor
@@ -35,4 +35,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Harmony music windows exe
-          path: ./Harmony-Music/dist/*
+          path: ./OpenTune-Desktop/dist/*
