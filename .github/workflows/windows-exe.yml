@@ -14,7 +14,7 @@ jobs:
           flutter-version: '3.24.2'
           
       - name: Clone project
-        run: git clone https://github.com/Arturo254/OpenTune-Desktop.git
+        run: git clone https://github.com/Arturo254/opentune_desktop
 
       - name: Update lang data
         working-directory: ./OpenTune-Desktop
