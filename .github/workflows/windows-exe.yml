@@ -24,15 +24,46 @@ jobs:
         working-directory: ./opentune_desktop/lib/utils
         run: echo "const updateCheckFlag = true;" > update_check_flag_file.dart
         
-      - name: Build windows exe package
+      - name: Get dependencies
+        working-directory: ./opentune_desktop
+        run: flutter pub get
+        
+      - name: Build Windows app
         working-directory: ./opentune_desktop
         run: |
           flutter clean
-          dart pub global activate flutter_distributor
-          flutter_distributor package --platform windows --targets exe
+          flutter build windows --release --verbose
+          
+      - name: Debug - List build files
+        working-directory: ./opentune_desktop
+        run: |
+          echo "Listing build directory:"
+          dir build\windows\x64\runner\Release\ /b
+          echo "Checking if exe exists:"
+          if exist "build\windows\x64\runner\Release\opentune_desktop.exe" (
+            echo "✓ EXE file found"
+            dir build\windows\x64\runner\Release\opentune_desktop.exe
+          ) else (
+            echo "✗ EXE file not found"
+          )
+          
+      - name: Create distribution folder
+        working-directory: ./opentune_desktop
+        run: |
+          mkdir dist
+          xcopy "build\windows\x64\runner\Release\*" "dist\" /E /I /H /Y
+          
+      - name: Verify distribution folder
+        working-directory: ./opentune_desktop
+        run: |
+          echo "Contents of dist folder:"
+          dir dist\ /b
           
       - name: Upload Windows exe artifact
         uses: actions/upload-artifact@v4
         with:
           name: OpenTune music windows exe
-          path: ./opentune_desktop/dist/*
+          path: |
+            ./opentune_desktop/dist/
+            !./opentune_desktop/dist/*.pdb
+            !./opentune_desktop/dist/*.lib
